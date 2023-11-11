@@ -1,7 +1,12 @@
 # Parameters: change as needed! #
-get_gml = True
-get_csv = False
+get_gml = False
+get_csv = True
 wos_files = ["networkonchip.txt", "blockcipher.txt"]
+
+# output files
+wos_cites_file_name = "wos.cites.csv"
+wos_content_file_name = "wos.content.csv"
+wos_paper_file_name = "wos.paper.csv"
 #################################
 
 class Publication:
@@ -84,12 +89,13 @@ def get_all_publications(files_list):
     return publications
 
 import networkx as nx
-import spacy
+# import spacy
 # using https://github.com/wjbmattingly/keyword-spacy
 
 def get_output_file(publications):
     if(get_gml): G = nx.Graph()
     dois = [pub.doi for pub in publications]
+    seen = set()
 
     i = 0
     for publication in publications:
@@ -97,10 +103,25 @@ def get_output_file(publications):
         i += 1
         # print(publication)
         if(get_gml): G.add_node(publication.doi)
+
+        # make sure there are no duplicates
+        if publication.doi not in seen:
+            seen.add(publication.doi)
+        else:
+            continue
+    
+    # initialize csv file
+    if (get_csv):
+        output_cites_file = open(wos_cites_file_name, "a")
+        output_cites_file.write('"cited_paper_id","citing_paper_id"\n')
+
+    for publication in publications:
         for citation in publication.citations:
             if (citation in dois):
                 if(get_gml): G.add_edge(publication.doi, citation)
-
+                if (get_csv):
+                    output_cites_file.write('"%s","%s"\n' % (publication.doi, citation))
+                    
     if(get_gml): nx.write_gml(G, "citation_graph_abs_try_savedrecs.gml")
 
 def main():
