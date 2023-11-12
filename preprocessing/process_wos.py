@@ -1,9 +1,16 @@
-# Parameters: change as needed! #
+#################################
+# PARAMETERS: change as needed! #
 get_gml = False
 get_csv = True
-wos_files = ["networkonchip.txt", "blockcipher.txt"]
 
-# output files
+# example files and categories
+# note down all wos text files in wos_files, 
+# and note their corresponding categories in the same order in wos_categories
+
+wos_files = ["networkonchip.txt", "blockcipher.txt"]
+wos_categories = ["network_on_chip", "block_cipher"]
+
+# output file naming
 wos_cites_file_name = "wos.cites.csv"
 wos_content_file_name = "wos.content.csv"
 wos_paper_file_name = "wos.paper.csv"
@@ -14,17 +21,19 @@ class Publication:
     citations = []
     doi = ""
     abstract = ""
-    def __init__(self, title, citations, doi, abstract):
+    category = ""
+    def __init__(self, title, citations, doi, abstract, category):
         self.title = title
         self.citations = citations
         self.doi = doi.strip()
         self.abstract = abstract
+        self.category = category
     def __eq__(self, other):
         if isinstance(other, self):
             return self.doi == other.doi
         return False
     def __repr__(self):
-        return f"<Publication title:{self.title} citations:{self.citations} doi:{self.doi}>"
+        return f"<Publication title:{self.title} citations:{self.citations} doi:{self.doi} category:{self.category}>"
 
 def getDOI(line): 
     doi = ""
@@ -35,7 +44,7 @@ def getDOI(line):
             break
     return doi
 
-def get_papers_list(publicationsinit, file):
+def get_papers_list(publicationsinit, file, category):
     publications = publicationsinit
     title = ""
     citations = []
@@ -47,16 +56,15 @@ def get_papers_list(publicationsinit, file):
         # print(line)
         if line == "":
             print("BREAK")
-            publications.append(Publication(title, citations, doi, abstract))
+            publications.append(Publication(title, citations, doi, abstract, category))
             break
         elif line[:2] == "TI":
             if (doi != ""):
-                publications.append(Publication(title, citations, doi, abstract))
+                publications.append(Publication(title, citations, doi, abstract, category))
                 title = ""
                 citations = []
                 doi = ""
                 abstract = ""
-                print("HERE")
             else: 
                 print("no doi??")
             split = line.split(" ")
@@ -68,7 +76,6 @@ def get_papers_list(publicationsinit, file):
         elif line[:2] == "CR":
             citations.append(getDOI(line))
             line = file.readline()
-            print(line)
             while (line[:2] == "  "):
                 citations.append(getDOI(line))
                 line = file.readline()
@@ -81,15 +88,18 @@ def get_papers_list(publicationsinit, file):
     file.close()
     return publications
 
-def get_all_publications(files_list):
+def get_all_publications(files_list, categories_list):
     publications = []
-    for file_not_open in files_list:
-        file = (open(file_not_open, encoding="utf8"))
-        publications = get_papers_list(publications, file)
+    for i in range(len(files_list)):
+        file = (open(files_list[i], encoding="utf8"))
+        publications = get_papers_list(publications, file, categories_list[i])
     return publications
 
 import networkx as nx
-# import spacy
+# note: spacy needs python3.7+
+import spacy
+from keyword_spacy import KeywordExtractor
+nlp = spacy.load("en_core_web_md")
 # using https://github.com/wjbmattingly/keyword-spacy
 
 def get_output_file(publications):
@@ -102,7 +112,7 @@ def get_output_file(publications):
         print(i)
         i += 1
         # print(publication)
-        if(get_gml): G.add_node(publication.doi)
+        if(get_gml): G.add_node(publication.doi, category=publication.category)
 
         # make sure there are no duplicates
         if publication.doi not in seen:
@@ -114,18 +124,44 @@ def get_output_file(publications):
     if (get_csv):
         output_cites_file = open(wos_cites_file_name, "a")
         output_cites_file.write('"cited_paper_id","citing_paper_id"\n')
+        output_categories_file = open(wos_paper_file_name, "a")
+        output_categories_file.write('"paper_id","class_label"\n')
+        output_content_file = open(wos_content_file_name, "a")
+        output_content_file.write('"paper_id","word_cited_id"\n')
 
+    nlp.add_pipe("keyword_extractor", last=True, config={"top_n": 10,
+                                                     "top_n_sent": 5,
+                                                     "min_ngram": 1,
+                                                     "max_ngram": 1,
+                                                     "strict": False})
+    
+    keywords = set()
     for publication in publications:
+        if (get_csv):
+            # process keywords
+            doc = nlp(publication.abstract)
+            print("Top Document Keywords:", doc._.keywords)
+            doc_keywords = set()
+            for keyword in doc._.keywords:
+                keyword_clean = keyword[0].lower().replace(" ", "_")
+                if keyword_clean not in keywords:
+                    keywords.add(keyword_clean)
+                if keyword_clean not in doc_keywords:
+                    output_content_file.write('"%s","%s"\n' % (publication.doi, keyword_clean))
+                    doc_keywords.add(keyword_clean)
+
+        # process edge graph
         for citation in publication.citations:
             if (citation in dois):
                 if(get_gml): G.add_edge(publication.doi, citation)
                 if (get_csv):
                     output_cites_file.write('"%s","%s"\n' % (publication.doi, citation))
+                    output_categories_file.write('"%s","%s"\n' % (publication.doi, publication.category))
                     
-    if(get_gml): nx.write_gml(G, "citation_graph_abs_try_savedrecs.gml")
+    if(get_gml): nx.write_gml(G, "citation_graph.gml")
 
 def main():
-    publications = get_all_publications(wos_files)
+    publications = get_all_publications(wos_files, wos_categories)
     get_output_file(publications)
 
 if __name__ == "__main__":
