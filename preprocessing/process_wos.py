@@ -1,14 +1,16 @@
 #################################
 # PARAMETERS: change as needed! #
-get_gml = False
+get_gml = True
 get_csv = True
 
 # example files and categories
 # note down all wos text files in wos_files, 
 # and note their corresponding categories in the same order in wos_categories
 
-wos_files = ["networkonchip.txt", "blockcipher.txt"]
-wos_categories = ["network_on_chip", "block_cipher"]
+wos_files = ["EdgeML_1.txt", "EdgeML_1.txt", "MLAccelerator_1.txt", "MLAccelerator_2.txt", 
+             "Neuromorphic_1.txt", "Neuromorphic_2.txt", "SpikingNN_1.txt", "SpikingNN_1.txt"]
+wos_categories = ["EdgeML", "EdgeML", "MLAccelerator", "MLAccelerator", "Neuromorphic", 
+                  "Neuromorphic", "SpikingNN", "SpikingNN"]
 
 # output file naming
 wos_cites_file_name = "wos.cites.csv"
@@ -77,7 +79,7 @@ def get_papers_list(publicationsinit, file, category):
             citations.append(getDOI(line))
             line = file.readline()
             while (line[:2] == "  "):
-                citations.append(getDOI(line))
+                citations.append(getDOI(line).replace("[", ""))
                 line = file.readline()
         elif line[:2] == "DI":
             split = line.split(" ")
@@ -104,7 +106,8 @@ nlp = spacy.load("en_core_web_md")
 
 def get_output_file(publications):
     if(get_gml): G = nx.Graph()
-    dois = [pub.doi for pub in publications]
+    dois = set(pub.doi for pub in publications)
+    dois.remove("")
     seen = set()
 
     i = 0
