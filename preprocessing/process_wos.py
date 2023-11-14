@@ -2,13 +2,16 @@
 # PARAMETERS: change as needed! #
 get_gml = True
 get_csv = True
+get_complete_csv = True
+# get_vocab_csv = True
 
 # example files and categories
 # note down all wos text files in wos_files, 
 # and note their corresponding categories in the same order in wos_categories
 
-wos_files = ["EdgeML_1.txt", "EdgeML_2.txt", "MLAccelerator_1.txt", "MLAccelerator_2.txt", 
-             "Neuromorphic_1.txt", "Neuromorphic_2.txt", "SpikingNN_1.txt", "SpikingNN_2.txt"]
+wos_files = ["../data/Custom/EdgeML_1.txt", "../data/Custom/EdgeML_2.txt", "../data/Custom/MLAccelerator_1.txt", 
+             "../data/Custom/MLAccelerator_2.txt", "../data/Custom/Neuromorphic_1.txt", "../data/Custom/Neuromorphic_2.txt", 
+             "../data/Custom/SpikingNN_1.txt", "../data/Custom/SpikingNN_2.txt"]
 wos_categories = ["EdgeML", "EdgeML", "MLAccelerator", "MLAccelerator", "Neuromorphic", 
                   "Neuromorphic", "SpikingNN", "SpikingNN"]
 
@@ -16,6 +19,7 @@ wos_categories = ["EdgeML", "EdgeML", "MLAccelerator", "MLAccelerator", "Neuromo
 wos_cites_file_name = "wos.cites.csv"
 wos_content_file_name = "wos.content.csv"
 wos_paper_file_name = "wos.paper.csv"
+wos_complete_file_name = "wos.complete.csv"
 #################################
 
 class Publication:
@@ -24,19 +28,23 @@ class Publication:
     doi = ""
     abstract = ""
     category = ""
+    year = 0
+    keywords = []
 
-    def __init__(self, title, citations, doi, abstract, category):
+    def __init__(self, title, citations, doi, abstract, category, year, keywords=[]):
         self.title = title
         self.citations = citations
         self.doi = doi.strip()
         self.abstract = abstract
         self.category = category
+        self.year = year
+        self.keywords = keywords
     def __eq__(self, other):
         if isinstance(other, self):
             return self.doi == other.doi
         return False
     def __repr__(self):
-        return f"<Publication title:{self.title} citations:{self.citations} doi:{self.doi} category:{self.category}>"
+        return f"<Publication title:{self.title} citations:{self.citations} doi:{self.doi} category:{self.category} year:{self.year} keywords:{self.keywords}>"
 
 def getDOI(line): 
     doi = ""
@@ -53,6 +61,8 @@ def get_papers_list(publicationsinit, file, category):
     citations = []
     doi = ""
     abstract = ""
+    year = 0
+
     no_dois = 0
 
     line = file.readline()
@@ -60,15 +70,16 @@ def get_papers_list(publicationsinit, file, category):
         # print(line)
         if line == "":
             print("BREAK")
-            publications.append(Publication(title, citations, doi, abstract, category))
+            publications.append(Publication(title, citations, doi, abstract, category, year))
             break
         elif line == "\n":
             if (doi != ""):
-                publications.append(Publication(title, citations, doi, abstract, category))
+                publications.append(Publication(title, citations, doi, abstract, category, year))
                 title = ""
                 citations = []
                 doi = ""
                 abstract = ""
+                year = 0
             else: 
                 print("no doi??")
                 no_dois += 1
@@ -76,6 +87,7 @@ def get_papers_list(publicationsinit, file, category):
                 doi = ""
                 citations = []
                 abstract = ""
+                year = 0
             line = file.readline()
         elif line[:2] == "TI":
             title = line[3:].strip()
@@ -100,6 +112,9 @@ def get_papers_list(publicationsinit, file, category):
                 line = file.readline()
             # print("CITATIONS")
             # print(citations)
+        elif line[:2] == "PY":
+            year = int(line[3:7])
+            line = file.readline()
         else:
             line = file.readline()
     file.close()
@@ -113,6 +128,7 @@ def get_all_publications(files_list, categories_list):
     return publications
 
 import networkx as nx
+import pandas as pd
 # note: spacy needs python3.7+
 import spacy
 from keyword_spacy import KeywordExtractor
@@ -128,9 +144,15 @@ def get_output_file(publications):
         output_categories_file.write('"paper_id","class_label"\n')
         output_content_file = open(wos_content_file_name, "a")
         output_content_file.write('"paper_id","word_cited_id"\n')
+    if (get_complete_csv):
+        output_complete_file = open(wos_complete_file_name, "a")
+        output_complete_file.write('"paper_id","category","year","keywords","cited_by"\n')
 
-    if(get_gml): G = nx.Graph()
+    G = nx.Graph()
+    if (get_complete_csv):
+        G = nx.DiGraph()
     dois = set(pub.doi for pub in publications)
+    publications_clean = []
 
     print("DOIS")
     print(len(dois))
@@ -147,52 +169,73 @@ def get_output_file(publications):
                                                      "max_ngram": 1,
                                                      "strict": False})
 
-    i = 0
-    for publication in publications:
+    # i = 0
+    for p in range(len(publications)):
         # print(publication)
     
-        keywords = set()
+        keywords = {}
         # make sure there are no duplicates
 
-        if publication.doi not in seen:
+        if publications[p].doi not in seen:
             # print(i)
             # i += 1
 
-            if(get_gml): G.add_node(publication.doi, category=publication.category)
+            G.add_node(publications[p].doi, category=publications[p].category)
 
-            if (get_csv):
-                # process keywords
-                doc = nlp(publication.abstract)
-                # print("Top Document Keywords:", doc._.keywords)
-                doc_keywords = set()
-                for keyword in doc._.keywords:
-                    keyword_clean = keyword[0].lower().replace(" ", "_")
-                    if keyword_clean not in keywords:
-                        keywords.add(keyword_clean)
-                    if keyword_clean not in doc_keywords:
-                        output_content_file.write('"%s","%s"\n' % (publication.doi, keyword_clean))
-                        doc_keywords.add(keyword_clean)
+            # process keywords
+            doc = nlp(publications[p].abstract)
+            # print("Top Document Keywords:", doc._.keywords)
+            doc_keywords = list()
+            for keyword in doc._.keywords:
+                keyword_clean = keyword[0].lower().replace(" ", "_")
+                if keyword_clean not in keywords:
+                    keywords[keyword_clean] = True
+                if keyword_clean not in doc_keywords:
+                    if (get_csv or get_complete_csv):
+                        output_content_file.write('"%s","%s"\n' % (publications[p].doi, keyword_clean))
+                    doc_keywords.append(keyword_clean)
+                
+            publications[p].keywords = doc_keywords
+            publications_clean.append(publications[p])
             
-            seen[publication.doi] = publication.category
-    
-    seen = {}
-    for publication in publications:
-        if publication.doi not in seen:
-            for citation in publication.citations:
-                if (citation in dois):
-                    if (get_gml): G.add_edge(publication.doi, citation)
-                    if (get_csv):
-                        output_cites_file.write('"%s","%s"\n' % (publication.doi, citation))
-                        output_categories_file.write('"%s","%s"\n' % (publication.doi, publication.category))
-            seen[publication.doi] = publication.category
+            seen[publications[p].doi] = publications[p].category
         else:
             seen_int += 1
             print("seen: " + str(seen_int))
-            print(publication.doi)
-            print(seen[publication.doi])
-            print(publication.category)
-            print(publication.abstract)
+            print(publications[p].doi)
+            print(seen[publications[p].doi])
+            print(publications[p].category)
+            # print(publications[p].abstract)
             continue   
+    
+    # if(get_vocab_csv):
+    #     vocab_file = open("vocab_csv", "a")
+    #     vocab_file.write("doi")
+    #     for vocab in keywords:
+    #         vocab_file.write(",")
+    #         vocab_file.write(vocab)
+
+    # second pass to add edges with existing nodes
+    # edges cannot be added if nodes don't exist yet
+    for publication in publications_clean:
+        for citation in publication.citations:
+            if (citation in dois):
+                G.add_edge(publication.doi, citation)
+
+                if (get_csv):
+                    output_cites_file.write('"%s","%s"\n' % (publication.doi, citation))
+        
+        if (get_csv):
+            output_categories_file.write('"%s","%s"\n' % (publication.doi, publication.category))
+    
+    # third pass to count up all in-degrees after all edges are added
+    # "paper_id","category","year","keywords","cited_by"
+    if (get_complete_csv):
+        for publication in publications_clean:
+            keyword_string = " ".join(map(str, publication.keywords))
+            in_degree = G.in_degree(publication.doi)
+            output_complete_file.write('"%s","%s",%d,"%s","%s"\n' % 
+                                       (publication.doi, publication.category, publication.year, keyword_string, in_degree))
           
     if(get_gml): nx.write_gml(G, "citation_graph.gml")
 
