@@ -11,7 +11,7 @@ get_complete_csv = True
 
 wos_files = ["../data/updated_wos/AcceleratorsML1.txt", "../data/updated_wos/AcceleratorsML2.txt", "../data/updated_wos/EdgeML1.txt", 
              "../data/updated_wos/EdgeML2.txt", "../data/updated_wos/EdgeML3.txt", "../data/updated_wos/EdgeML4.txt", 
-             "../data/updated_wos/EdgeML5.txt", "../data/updated_wos/Neuromorphic1.txt", "../data/updated_wos/Neuromorphic2.txt"
+             "../data/updated_wos/EdgeML5.txt", "../data/updated_wos/Neuromorphic1.txt", "../data/updated_wos/Neuromorphic2.txt",
              "../data/updated_wos/Neuromorphic3.txt", "../data/updated_wos/Neuromorphic4.txt", "../data/updated_wos/Neuromorphic5.txt",
              "../data/updated_wos/Spiking1.txt", "../data/updated_wos/Spiking2.txt", "../data/updated_wos/Spiking3.txt",
              "../data/updated_wos/Spiking4.txt", "../data/updated_wos/Spiking5.txt"]
