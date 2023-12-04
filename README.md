@@ -34,7 +34,7 @@ Each file in the repo can be run as either a standard Python file or Jupyter Not
 
 ### Organization
 
-The data folder of the project contains the data files used, separated by the dataset that they are a part of, CiteSeer, Cora, MAG (used experimentally), WoS, and updated WoS. Each of these contain csv files for the data and their original data formats if applicable.
+The data folder of the project contains the data files used, separated by the dataset that they are a part of, CiteSeer, Cora, MAG (used experimentally but left out for size), WoS, and updated WoS. Each of these contain csv files for the data and their original data formats if applicable.
 
 The model folder contains the GNN models used for node classification and link prediction on each model. Some models have been divided between two files (such as some models for DGL), but the basic organization still applies. In this regard, models exist for CiteSeer, Cora, MAG, PubMed, and WoS. These files also contain some of the code used for finding the characteristics of a network, since formatting the data into a NetworkX graph (used for the network characteristics) can be computationally expensive. Since the same code was used for the updated WoS graph, the same files were used and only the newest data is available. For the smaller dataset, the code can be rerun by passing the alternative file location to the correct cell in the Jupyter Notebook.
 
