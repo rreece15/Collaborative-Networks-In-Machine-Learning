@@ -47,7 +47,7 @@ email address or ORCID}
 City, Country \\
 email address or ORCID}
 \and
-\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
+\IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
 \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
 \textit{name of organization (of Aff.)}\\
 City, Country \\
@@ -57,9 +57,7 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+Citation networks are graphical networks composed of publications as nodes and citations as edges. They offer a unique look into scientific collaboration and the flow of knowledge within academia. In this paper, we examine the history of machine learning hardware papers through the lens of citation networks and construct GNN models for node classification and link prediction for our custom machine learning hardware dataset as well as existing datasets in software engineering and machine learning. We utilize existing citation graphs as well as curate our own dataset from the Web of Science database to show that node classification and link prediction are effective on a new network of machine learning hardware papers.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -67,9 +65,8 @@ component, formatting, style, styling, insert
 \end{IEEEkeywords}
 
 \section{Introduction}
-This document is a model and instructions for \LaTeX.
-Please observe the conference page limits. 
-
+Inspired by the recent advent of graphical neural networks (GNNs), this project explores their potential to classify academic networks. Given any individual publication or author, GNNs could predict their relation to the remainder of the network, useful for understanding the relationships between academic fields, authors, institutions, and more. This opens the door to opportunities for classifying papers in fields with minimal representation in existing citation networks or predicting links between papers, potentially applicable to discovering inspiring papers related to an author's past work,  among other capabilities. \par
+In particular, machine learning hardware is a new field that has skyrocketed from the recent popularity of machine learning. Due to the compute-intensive nature of this field, plenty of research exists in the hardware infrastructure to support these computing loads. We utilize GNNs for node classification and link prediction to explore existing datasets and comment on the new corpus of machine learning hardware papers. The main challenges are processing data for useful representations of the network and data interpretation on the created GNNs to comment on the field of machine learning hardware. \par
 \section{Ease of Use}
 
 \subsection{Maintaining the Integrity of the Specifications}
