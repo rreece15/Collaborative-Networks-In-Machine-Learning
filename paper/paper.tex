@@ -60,26 +60,144 @@ email address or ORCID}
 Citation networks are graphical networks composed of publications as nodes and citations as edges. They offer a unique look into scientific collaboration and the flow of knowledge within academia. In this paper, we examine the history of machine learning hardware papers through the lens of citation networks and construct GNN models for node classification and link prediction for our custom machine learning hardware dataset as well as existing datasets in software engineering and machine learning. We utilize existing citation graphs as well as curate our own dataset from the Web of Science database to show that node classification and link prediction are effective on a new network of machine learning hardware papers.
 \end{abstract}
 
-\begin{IEEEkeywords}
-component, formatting, style, styling, insert
-\end{IEEEkeywords}
+% \begin{IEEEkeywords}
+% component, formatting, style, styling, insert
+% \end{IEEEkeywords}
 
-\section{Introduction}
-Inspired by the recent advent of graphical neural networks (GNNs), this project explores their potential to classify academic networks. Given any individual publication or author, GNNs could predict their relation to the remainder of the network, useful for understanding the relationships between academic fields, authors, institutions, and more. This opens the door to opportunities for classifying papers in fields with minimal representation in existing citation networks or predicting links between papers, potentially applicable to discovering inspiring papers related to an author's past work,  among other capabilities. \par
-In particular, machine learning hardware is a new field that has skyrocketed from the recent popularity of machine learning. Due to the compute-intensive nature of this field, plenty of research exists in the hardware infrastructure to support these computing loads. We utilize GNNs for node classification and link prediction to explore existing datasets and comment on the new corpus of machine learning hardware papers. The main challenges are processing data for useful representations of the network and data interpretation on the created GNNs to comment on the field of machine learning hardware. \par
-\section{Ease of Use}
+\section{Introduction and Motivation}
+Inspired by the recent advent of graphical neural networks (GNNs), this project explores their potential to classify academic networks. 
+Given any individual publication or author, GNNs could predict their relation to the remainder of the network, 
+useful for understanding the relationships between academic fields, authors, institutions, and more. This opens the door to 
+opportunities for classifying papers in fields with minimal representation in existing citation networks or predicting links 
+between papers, potentially applicable to discovering inspiring papers related to an author's past work, 
+among other capabilities. \par
 
-\subsection{Maintaining the Integrity of the Specifications}
+In particular, machine learning hardware is a new field that has skyrocketed from the recent popularity of machine learning. 
+Due to the compute-intensive nature of this field, plenty of research exists in the hardware infrastructure to support these 
+computing loads. We utilize GNNs for node classification and link prediction to explore existing datasets and comment on the 
+new corpus of machine learning hardware papers. The main challenges are processing data for useful representations of the network 
+and data interpretation on the created GNNs to comment on the field of machine learning hardware. \par
+\section{Previous Work}
+There have been many previous explorations of citation networks using the datasets Cora, Citeseer, and PubMed Diabetes. 
+In these citation networks, in particular, node classification and link prediction have been heavily explored. 
+In Optimization of Graph Neural Networks with Natural Gradient Descent, Izadi et al improve on traditional optimization 
+algorithms such as ADAM and stochastic gradient descent (SGD), producing a superior accuracy (90.16±0.59\%) 
+by utilizing a proposed method inspired by natural gradient descent [1]. This paper achieved the highest accuracy across 
+71 different papers done on node classification of the Cora dataset.  \par
 
-The IEEEtran class file is used to format your paper and style the text. All margins, 
-column widths, line spaces, and text fonts are prescribed; please do not 
-alter them. You may note peculiarities. For example, the head margin
-measures proportionately more than is customary. This measurement 
-and others are deliberate, using specifications that anticipate your paper 
-as one part of the entire proceedings, and not as an independent document. 
-Please do not revise any of the current designations.
+Those that explored link prediction in the Cora and Citeseer datasets have achieved great results as well. 
+In ‘NESS: Node Embeddings from Static SubGraphs,’ Ucar proposed splitting up the graph into multiple subgraphs 
+that do not have overlapping edges in between subgraphs, using each graph to train and obtain node representations, 
+then aggregating the results to obtain predictions [2]. Using this, he was able to obtain state-of-the-art accuracy results, 
+achieving 98.94±0.1\% on Citeseer and 96.81±0.6\% on Cora. In ‘Neural Link Prediction with Walk Pooling,’ L. 
+Pan et al proposed a GNN architecture that adds attention mechanisms to GNNs, achieving an accuracy of 89.59±1.58\% [3]. 
+These past studies show the efficacy of GNNs on academic publications for node classification and link prediction, and, 
+since these accuracies were certainly impressive, we hope to use these networks as a baseline to examine the key features 
+of different datasets and extract information to create a similar dataset about the subject of machine learning hardware.  \par
 
-\section{Prepare Your Paper Before Styling}
+\section{Approach}
+
+Two preconstructed datasets, Cora and CiteSeer, are large datasets of scientific machine learning papers. 
+Each dataset contains papers from before 2008, with citations to other papers in the database as well as the 
+vocabulary used. The nodes of the graph are the papers themselves, with topics and vocabulary as individual features, 
+while the directed links are citations to other papers. Cora classifies each publication into one of seven categories: 
+Theory, Reinforcement Learning, Genetic Algorithms, Neural Networks, Probabilistic Methods, Case Based, and Rule Learning. 
+On the other hand, Citeseer classifies each publication into one of six categories: Agents, Artificial Intelligence, Database, 
+Human Computer Interaction, Machine Learning, and Information Retrieval. \par
+
+Meanwhile, PubMed is a database of diabetes publications that is classified into one of three classes [4]. As such, this 
+dataset is similar to both Cora and CiteSeer, though it further explores the efficacy of GNNs on datasets outside of 
+machine learning. This performance of this dataset can further validate parameters potentially affecting accuracies, 
+such as edge count, classes, or path length,  in addition to explaining differences in different fields of publications. \par
+
+Web of Science (WoS) is an online database of publication citations and information [5]. 
+This online database created by Clarivate can be queried by genre and shows identifying information such as titles, 
+references, and specific citations. As such, we can utilize the WoS dataset to address the goal of exploring additional 
+datasets in machine learning hardware. Specifically, by downloading papers by (exclusive) topic, 
+we can create a dataset representative of the field of machine learning and compare the performance of our dataset 
+against GNNs alongside other common datasets to analyze its efficacy on these models and its viability as a dataset 
+in an academic setting. Using this popular database, we query their dataset of publications for four categories: 
+Machine Learning on the Edge, Neuromorphic Computing, Spiking Neural Networks, and Machine Learning Accelerator. 
+In using the Web of Science database, we assume that the papers are representative of their assigned class and 
+distinct from related classes. In this regard, the dataset that we curate is unique from other citation networks 
+in that it will hold distinct characteristics and be of machine learning hardware, providing insight into the 
+structure and nature of the machine learning hardware citation network. \par
+
+Beginning with the provided models like Deep Graph Library, we take inspiration from existing methods, 
+such as preprocessing methods discussed by the Semantic Scholar Academic Graph [6]. By constructing our 
+datasets of publications, we will examine model characteristics of varying types of publication networks. 
+We also explored other datasets to improve the diversity of our datasets. The  Microsoft Open Academic Graph [7], 
+a large academic graph dataset, shows a promising example of dataset scale, though it has differences in 
+features, scaling, and overlapping that can interfere with providing information about any one academic field. 
+Here, the data set uses a variety of data types for the nodes, like publications, authors, and venues, with 
+the links between each denoting a correlation. \par 
+
+Following the specified approach to our project goals, the main tasks of our project are as follows. 
+First, we will apply the necessary pre-processing techniques to each dataset for model compatibility. 
+Then, we will create a GNN model using each dataset that accurately predicts paper topics and citations, 
+commenting on the accuracy and effectiveness of GNNs in node classification or link prediction in academic 
+contexts. For node classification, we will create a GNN model based on the vocabulary and neighbors as 
+embeddings of each node, experimenting with different configurations to find the best model. Finally, 
+we will take the results in terms of graph characteristics and model performance to analyze our dataset 
+as an academic tool. In this regard, our technique is rather scalable, as these steps can be applied to 
+academic datasets of nearly any field and in datasets beyond academic publications as well. However, 
+this is also given the assumption that different academic fields follow similar citation networks to 
+those listed, that these fields can be described by the vocabularies that they exhibit, and that 
+these networks produce a graph that is compatible with neural network models. \par
+
+\section{Experimental Setup and Results}
+
+\subsection{Datasets}
+
+Since the datasets Cora and Citeseer are included within some deep learning packages, 
+we directly use those for constructing GNNs. Utilizing resources and configurations of 
+included models within StellarGraph, Pytorch Geometric, and Keras, we can also construct 
+predictive models for node classification and link prediction. \par
+
+In creating our dataset, we query Web of Science for topics in machine learning 
+hardware published between 1970 and 2022. For ease of use, we removed nodes without a 
+DOI and duplicated values between categories so each node only belongs to one category. 
+The collected data includes title, publishing year, abstract, and citations. \par
+
+While Web of Science shows a close-to-linear growth of publications during this time, 
+there has been an exponential growth of papers in machine learning hardware over the 
+same period. We see a large spike in interest, following machine learning in general 
+after OpenAI launched GPT. \par
+
+With the text files generated, we constructed a NetworkX graph using DOI values to 
+match paper citations. We also utilized the categories as labels, and the overall 
+graph topography is in Figure A. This graph serves as our dataset once converted 
+into StellarGraph or NetworkX Pytorch Geometric dataset instances as needed. \par 
+
+In total, our graph had 4951 nodes, though only 2605 nodes have non-zero edges. 
+Looking at the in-degrees of each node, we see evidence of a scale-free network, 
+where few nodes are popularly cited, but many are not referenced often. This may 
+also be due to the recentness of these publications, as future papers will likely 
+add on to those numbers. The number of paper citations is also indicative of its 
+impact, with larger in-degrees meaning more outreach and influence. \par 
+
+Removing nodes without edges allows us to focus on the variety in edges and prevents 
+the model from predicting 0 edges each time for high accuracy, the resulting is 
+still disconnected, with an average degree of 5.0672, an average clustering coefficient 
+of 0.1353, and a maximum diameter across all connected subgraphs of 16, 
+with the average undirected path length being 4.6073 edges. \par 
+
+However, from observation, we notice that our graph is much smaller and less connected 
+than the given datasets. As in Figure 1 below, there are lots of unconnected nodes. 
+And, after removing non-zero edges, there are still plenty of nodes that have only 
+one edge to another paper, likely due to their remaining citations not having an associated 
+word vector. \par 
+
+To combat this, we increase the size of the WoS database, querying additional nodes from the 
+WoS database. Then, we take the largest connected component of the 
+larger graph to increase the overall connectivity of the graph. \par
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[scale=0.3] {wos_pic.png}}
+    \caption{Large WoS network, Blue=ML Accelerators, Purple=Edge ML, Green=Neuromorphic Computing, Orange=Spiking Neural Network.}
+    \label{fig}
+\end{figure}
+
 Before you begin to format your paper, first write and save the content as a 
 separate text file. Complete all content and organizational editing before 
 formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on 

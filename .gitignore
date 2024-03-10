@@ -3,3 +3,5 @@ data/MAG/dblp.v12.json
 data/MAG/output.csv
 data/outputacm.csv
 data/outputacm.txt
+paper/paper.aux
+paper/paper.log
