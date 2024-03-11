@@ -270,6 +270,73 @@ the database or as a characteristic of the field of ML hardware in general. \par
     \end{center}
 \end{table}
 
+To see the distribution of the demographic of the papers in terms of age, 
+we look at the number of papers in our updated WoS database, as in Figure 2 
+below. From this graph, we see that papers have been released more frequently 
+in recent years. This implies that machine learning hardware is a rising field, 
+which follows given the recent popularity of machine learning as a field in general. \par
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[scale=0.3] {papers_by_year.png}}
+    \caption{Growth of Papers Published in ML Hardware over Time.}
+    \label{fig}
+\end{figure}
+
+After applying these changes, we define a t-SNE visualization on the dataset, 
+as pictured in Figure 3. The plot helps to establish underlying patterns and 
+relationships in the dataset on a 2-D plane for reader understandability. 
+From this plot, we see that there are some strong clusters of papers and 
+some much weaker, though still characteristic. \par
+
+Then, after finding the edge list of the dataset, we can plot the degree distribution 
+chart of the network, plotting the number of times a paper was cited against the 
+frequency of that number of citations, shown in Figure 5 below. \par
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[scale=0.3] {tsne_embeddings.png}}
+    \caption{t-SNE Plot of the WoS Dataset.}
+    \label{fig}
+\end{figure}
+
+From this plot, we establish that the WoS citation network shows 
+characteristics of a small-world network, with few nodes exhibiting 
+a high number of citations and most having very few citations. 
+This result makes sense, as few papers are likely to have a high 
+impact, and those that do are likely to influence many papers. \par
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[scale=0.3] {times_cited.png}}
+    \caption{Occurrences for papers with certain times cited.}
+    \label{fig}
+\end{figure}
+
+Looking at the most-cited nodes, we find impactful key publications 
+in their respective fields. One such publication is “Equivalent-accuracy 
+accelerated neural-network training using analogue memory”, published in 2016 [7]. 
+In “Nanoscale memristor device as synapse in neuromorphic systems'' published 
+in 2018,  Jo et al. experimentally show a nanoscale memristor working within 
+the context of neuromorphic computing [8]. In another example, “Memory devices 
+and applications for in-memory computing” gives an overview of potential solutions 
+to in-memory computing, including solutions closely related to machine learning and 
+digital signal processing [9]. \par
+
+In finding additional outliers, we were also able to distinguish the age of our papers. 
+The dataset consisted of papers from the years of 1971 to 2023. Since machine 
+learning was identified as a rising field from the discussion regarding Figure 2, 
+there were many papers from 2023. And, since many papers only provided a month as 
+the date of publication, the multiple papers from November of 2023 prevented the 
+identification of the newest paper. However, the oldest paper, the only paper from 
+1971, was titled “Unit Spike Activity in Coelenteran Neural Network”, a paper about 
+temperature spikes in primitive neural nerve networks [10]. \par
+
+While both Cora and Citeseer categorize publications and have vocab dictionaries, 
+there are no such categories or dictionaries for Web of Science results. 
+Therefore, we utilized the search function to specify the categories to be 
+both used and excluded in each search. To match the vocabularies of Cora and 
+Citeseer, we utilized spacy for trained keyword extraction models, finding 
+the top 10 unigrams with the most significance in each abstract, and used 
+these words to construct our vocabulary vectors [11]. 
+
 Before you begin to format your paper, first write and save the content as a 
 separate text file. Complete all content and organizational editing before 
 formatting. Please note sections \ref{AA}--\ref{SCM} below for more information on 
