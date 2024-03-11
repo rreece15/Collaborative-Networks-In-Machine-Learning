@@ -7,6 +7,8 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+% mine own
+\usepackage{caption}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
@@ -88,15 +90,14 @@ There have been many previous explorations of citation networks using the datase
 In these citation networks, in particular, node classification and link prediction have been heavily explored. 
 In Optimization of Graph Neural Networks with Natural Gradient Descent, Izadi et al improve on traditional optimization 
 algorithms such as ADAM and stochastic gradient descent (SGD), producing a superior accuracy (90.16±0.59\%) 
-by utilizing a proposed method inspired by natural gradient descent [1]. This paper achieved the highest accuracy across 
-71 different papers done on node classification of the Cora dataset.  \par
+by utilizing a proposed method inspired by natural gradient descent. This paper achieved the highest accuracy across 
+71 different papers done on node classification of the Cora dataset \cite{CoraAccuracy}.  \par
 
 Those that explored link prediction in the Cora and Citeseer datasets have achieved great results as well. 
 In ‘NESS: Node Embeddings from Static SubGraphs,’ Ucar proposed splitting up the graph into multiple subgraphs 
 that do not have overlapping edges in between subgraphs, using each graph to train and obtain node representations, 
-then aggregating the results to obtain predictions [2]. Using this, he was able to obtain state-of-the-art accuracy results, 
-achieving 98.94±0.1\% on Citeseer and 96.81±0.6\% on Cora. In ‘Neural Link Prediction with Walk Pooling,’ L. 
-Pan et al proposed a GNN architecture that adds attention mechanisms to GNNs, achieving an accuracy of 89.59±1.58\% [3]. 
+then aggregating the results to obtain predictions. Using this, he was able to obtain state-of-the-art accuracy results, 
+achieving 98.94±0.1\% on Citeseer and 96.81±0.6\% on Cora. \cite{Ucar}
 These past studies show the efficacy of GNNs on academic publications for node classification and link prediction, and, 
 since these accuracies were certainly impressive, we hope to use these networks as a baseline to examine the key features 
 of different datasets and extract information to create a similar dataset about the subject of machine learning hardware.  \par
@@ -111,12 +112,12 @@ Theory, Reinforcement Learning, Genetic Algorithms, Neural Networks, Probabilist
 On the other hand, Citeseer classifies each publication into one of six categories: Agents, Artificial Intelligence, Database, 
 Human Computer Interaction, Machine Learning, and Information Retrieval. \par
 
-Meanwhile, PubMed is a database of diabetes publications that is classified into one of three classes [4]. As such, this 
+Meanwhile, PubMed is a database of diabetes publications that is classified into one of three classes \cite{Pubmed}. As such, this 
 dataset is similar to both Cora and CiteSeer, though it further explores the efficacy of GNNs on datasets outside of 
 machine learning. This performance of this dataset can further validate parameters potentially affecting accuracies, 
 such as edge count, classes, or path length,  in addition to explaining differences in different fields of publications. \par
 
-Web of Science (WoS) is an online database of publication citations and information [5]. 
+Web of Science (WoS) is an online database of publication citations and information \cite{WoS}. 
 This online database created by Clarivate can be queried by genre and shows identifying information such as titles, 
 references, and specific citations. As such, we can utilize the WoS dataset to address the goal of exploring additional 
 datasets in machine learning hardware. Specifically, by downloading papers by (exclusive) topic, 
@@ -130,9 +131,9 @@ in that it will hold distinct characteristics and be of machine learning hardwar
 structure and nature of the machine learning hardware citation network. \par
 
 Beginning with the provided models like Deep Graph Library, we take inspiration from existing methods, 
-such as preprocessing methods discussed by the Semantic Scholar Academic Graph [6]. By constructing our 
+such as preprocessing methods discussed by the Semantic Scholar Academic Graph \cite{Wade}. By constructing our 
 datasets of publications, we will examine model characteristics of varying types of publication networks. 
-We also explored other datasets to improve the diversity of our datasets. The  Microsoft Open Academic Graph [7], 
+We also explored other datasets to improve the diversity of our datasets. The  Microsoft Open Academic Graph \cite{Sinha}, 
 a large academic graph dataset, shows a promising example of dataset scale, though it has differences in 
 features, scaling, and overlapping that can interfere with providing information about any one academic field. 
 Here, the data set uses a variety of data types for the nodes, like publications, authors, and venues, with 
@@ -247,8 +248,6 @@ the database or as a characteristic of the field of ML hardware in general. \par
     \begin{center}
         \begin{tabular}{|c|cccccc|}
         \hline
-        % \textbf{Table}&\multicolumn{6}{|c|}{\textbf{Table Column Head}} \\
-        % \cline{1-4} 
         \textbf{} & \textbf{\textit{Nodes}} & \textbf{\textit{Edges}} & \textbf{\textit{Features}} &
         \textbf{\textit{Degree}} & \textbf{\textit{CC$^{\mathrm{a}}$}} & \textbf{\textit{MD$^{\mathrm{b}}$}} \\
         \hline
@@ -335,7 +334,35 @@ Therefore, we utilized the search function to specify the categories to be
 both used and excluded in each search. To match the vocabularies of Cora and 
 Citeseer, we utilized spacy for trained keyword extraction models, finding 
 the top 10 unigrams with the most significance in each abstract, and used 
-these words to construct our vocabulary vectors [11]. 
+these words to construct our vocabulary vectors [11]. \par
+
+\begin{figure}[htbp]
+    % \centering
+    \caption{Number of Papers per Year by Category}
+    \captionsetup{labelformat=empty}
+    \parbox[b]{.5\linewidth}{
+    \includegraphics[scale=0.23]{papers_by_year.png}
+    \caption{A cat}\label{cat}}
+    \parbox[b]{.45\linewidth}{
+    \includegraphics[scale=0.23]{times_cited.png}
+    \caption{An elephant}\label{elephant}}
+%   \caption{Number of Papers per Year by Category}\label{animals}
+    \captionsetup{labelformat=simple}
+\end{figure}
+
+In Table 1, we examine the structure of each community by computing the mixed 
+edge probability, i.e. how many out of the total edges in the graph contain 
+an edge from one community to other communities. The mixed edge theoretical 
+probability of a certain category, say A, is the probability that any node 
+is in A out of all nodes, multiplied by the probability that any node is 
+in any other category. We use this simple equation: \par
+
+% TODO: fix new line problem!
+\begin{equation}
+    Theoretical\; Mixed\; Edge\; Probability(category\; A)
+    \\
+    = (P(node\; in\;A)) (1 - P(node\;in\;A))\label{eq}
+\end{equation}
 
 Before you begin to format your paper, first write and save the content as a 
 separate text file. Complete all content and organizational editing before 
@@ -527,13 +554,13 @@ For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{CoraAccuracy} "Node Classification on Cora", url: https://paperswithcode.com/sota/node-classification-on-cora.
+\bibitem{Ucar} T. Ucar, "NESS: Node Embeddings from Static SubGraphs", in arXiv, 2023, url: https://doi.org/10.48550/arXiv.2303.08958. 
+\bibitem{Pubmed} National Library of Medicine, "Pubmed", url: https://relational.fit.cvut.cz/dataset/PubMed\_Diabetes.
+\bibitem{WoS} Clarivate, "Web of Science", 2023, url: https://www.webofscience.com/wos/woscc/basic-search.
+\bibitem{Wade} A. D. Wade, "The semantic scholar academic graph (s2ag)", in Companion Proceedings of the Web Conference 2022, 2022, pp. 739-739.
+\bibitem{Sinha} A. Sinha et al., "An overview of microsoft academic service (mas) and applications", in Proceedings of the 24th international conference on world wide web, 2015, pp. 243-246.
+\bibitem{Ambrogio} S. Ambrogio et al., "Equivalent-accuracy accelerated neural-network training using analogue memory", Nature, vol. 558, no. 7708, pp. 60-67, 2018.
 \end{thebibliography}
 \vspace{12pt}
 \color{red}
