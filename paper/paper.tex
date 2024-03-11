@@ -8,13 +8,14 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 % mine own
-\usepackage{caption}
+% \usepackage{caption}
+\usepackage{tabularx}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Conference Paper Title\\
-\thanks{Identify applicable funding agency here. If none, delete this.}
+\title{Collaborative Networks in Machine Learning Hardware\\
+\thanks{University of Texas at Austin}
 }
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
@@ -320,13 +321,9 @@ to in-memory computing, including solutions closely related to machine learning 
 digital signal processing [9]. \par
 
 In finding additional outliers, we were also able to distinguish the age of our papers. 
-The dataset consisted of papers from the years of 1971 to 2023. Since machine 
-learning was identified as a rising field from the discussion regarding Figure 2, 
-there were many papers from 2023. And, since many papers only provided a month as 
-the date of publication, the multiple papers from November of 2023 prevented the 
-identification of the newest paper. However, the oldest paper, the only paper from 
-1971, was titled “Unit Spike Activity in Coelenteran Neural Network”, a paper about 
-temperature spikes in primitive neural nerve networks [10]. \par
+The dataset consisted of papers from the years of 1971 to 2023. The oldest paper, 
+the only paper from 1971, was titled “Unit Spike Activity in Coelenteran Neural Network”, 
+a paper about temperature spikes in primitive neural nerve networks [10].  \par
 
 While both Cora and Citeseer categorize publications and have vocab dictionaries, 
 there are no such categories or dictionaries for Web of Science results. 
@@ -337,32 +334,221 @@ the top 10 unigrams with the most significance in each abstract, and used
 these words to construct our vocabulary vectors [11]. \par
 
 \begin{figure}[htbp]
-    % \centering
+    \centering
     \caption{Number of Papers per Year by Category}
-    \captionsetup{labelformat=empty}
+    % \captionsetup{labelformat=empty}
     \parbox[b]{.5\linewidth}{
     \includegraphics[scale=0.23]{papers_by_year.png}
     \caption{A cat}\label{cat}}
     \parbox[b]{.45\linewidth}{
     \includegraphics[scale=0.23]{times_cited.png}
     \caption{An elephant}\label{elephant}}
-%   \caption{Number of Papers per Year by Category}\label{animals}
-    \captionsetup{labelformat=simple}
+    \hfill
+    \parbox[b]{.5\linewidth}{
+    \includegraphics[scale=0.23]{papers_by_year.png}
+    \caption{A cat}\label{cat}}
+    \parbox[b]{.45\linewidth}{
+    \includegraphics[scale=0.23]{times_cited.png}
+    \caption{An elephant}\label{elephant}}
+    % \captionsetup{labelformat=simple}
 \end{figure}
 
-In Table 1, we examine the structure of each community by computing the mixed 
-edge probability, i.e. how many out of the total edges in the graph contain 
-an edge from one community to other communities. The mixed edge theoretical 
-probability of a certain category, say A, is the probability that any node 
-is in A out of all nodes, multiplied by the probability that any node is 
-in any other category. We use this simple equation: \par
+Next, we examine the structure of each community by computing the mixed edge 
+probability, i.e. how many out of the total edges in the graph contain an edge 
+from one community to other communities. The mixed edge theoretical probability 
+of a certain category, say A, is the probability that any node is in A out of 
+all nodes, multiplied by the probability that any node is in any other category. 
+We use this simple equation: \par
 
 % TODO: fix new line problem!
 \begin{equation}
     Theoretical\; Mixed\; Edge\; Probability(category\; A)
-    \\
-    = (P(node\; in\;A)) (1 - P(node\;in\;A))\label{eq}
 \end{equation}
+\begin{equation}
+    = (P(node\; in\;A)) (1 - P(node\;in\;A))\label{eq1}
+\end{equation}
+
+This number indicates the portion out of all edges that should contain an edge stretching 
+from a node in A to a node outside of A if the graph picked edges at random. \par
+
+Our actual mixed edge probability is calculated by: \par
+\begin{equation}
+    \dfrac{Number\; of\; in\; or\; out\; edges\; of\; a\; community}{Number\; of\; total\; edges}
+    \label{eq2}
+\end{equation}
+
+As seen in Table 2 below, our actual mixed edge probability is far 
+below the theoretical probability in a random graph. \par
+
+% Todo: fix new line problem!
+\begin{table}[htbp]
+    \caption{Mixed Edge Categorical Analysis}
+    \begin{center}
+        \begin{tabular}{|c|cccc|}
+        \hline
+        \textbf{Categories} & \textbf{\textit{Edge}} & \textbf{\textit{ML}} & 
+        \textbf{\textit{Neuromorphic}} & \textbf{\textit{Spiking}} \\
+        \textbf{} & \textbf{\textit{ML}} & \textbf{\textit{Accelerator}} & 
+        \textbf{\textit{Computing}} & \textbf{\textit{NN}} \\
+        \hline
+        \textbf{\textit{Theoretical}} &\ &\ &\ &\ \\
+        \textbf{\textit{Mixed Edge}} &
+        0.19813& 0.19256& 0.19051& 0.16663 \\
+        \textbf{\textit{Probability}} & \ &\ &\ &\ \\
+        \ & \ &\ &\ &\ \\
+        \textbf{\textit{Mixed Edge}} & 
+        0.02101& 0.06806& 0.09880& 0.05195 \\
+        \textbf{\textit{Probability}} & \ &\ &\ &\ \\
+        \hline
+        \end{tabular}
+        \label{tab2}
+    \end{center}
+\end{table}
+
+% TODO: can be removed later
+\ \newline
+\ \newline
+\ \newline
+\ \newline
+\ \newline
+\ \newline
+
+There are far fewer edges in between different categories than edges within a category. 
+As such, these topics within machine learning are distinct subject areas. \par
+
+\subsection{GNNs}
+
+For our baseline, we used a basic five-layer neural network that is essentially trained on word 
+vectors. On Cora, this achieved a 79.43\% accuracy for node classification; 
+on Citeseer, this achieved a 71.43\% accuracy. We then implemented a graphical 
+convolution network model on the Cora dataset with five feed-forward layers, which 
+achieves an accuracy of 71.13\% for link prediction and an accuracy of  86.58\% for 
+node classification. For the CiteSeer dataset, we received an accuracy of 74.1
+\% on node classification and 84.29\% on link prediction. Similarly, the PubMed dataset 
+yielded an accuracy of 78.7\% for both node classification and link prediction. 
+These results were further verified through applying a GNN model from DGL, which received 
+similar results to the previously mentioned models. This makes sense since Cora is a dataset 
+of machine learning papers while CiteSeer has software engineering papers, which is a larger 
+domain. Thus, citations are easier to predict in Citeseer. Furthermore, since Citeseer 
+has as many keywords as they do papers, and there are half as many keywords in Cora, 
+it is more likely that testing on Cora is done on keywords that the model has seen 
+before and is thus more accurate. \par
+
+In this regard, these datasets helped to establish a baseline for the expected performance 
+of a GNN on the dataset created from the Web of Science after PCA. Following similar methods as 
+before, the GNN model for node classification produced an accuracy of 78.06\%, 
+while Link prediction fared much better with an accuracy of 82.56\%. 
+These results are summarized in Table 3 below. \par 
+
+\begin{table}[htbp]
+    \caption{GNN Performance Across Datasets}
+    \begin{center}
+        \begin{tabular}{|c|cccccc|}
+        \hline
+        \textbf{Dataset} & \textbf{\textit{Cora}} & \textbf{\textit{CS$^{\mathrm{a}}$}} & \textbf{\textit{PM$^{\mathrm{b}}$}} &
+        \textbf{\textit{WoS1$^{\mathrm{c}}$}} & \textbf{WoS2$^{\mathrm{d}}$} & \textbf{WoS3$^{\mathrm{e}}$} \\
+        \hline
+        \textbf{\textit{Node}} &\ &\ &\ &\ &\ &\ \\
+        \textbf{\textit{Classif-}} &
+        86.58\%& 74.1\%& 78.7\%& 72.3\%& 76.96\%& 78.06\% \\
+        \textbf{\textit{ication}} &\ &\ &\ &\ &\ &\ \\
+        
+        \ &\ &\ &\ &\ &\ &\ \\
+
+        \textbf{\textit{Link}} &\ &\ &\ &\ &\ &\ \\
+        \textbf{\textit{Predic-}} &
+        71.13\%& 84.29\%& 78.74\%& 80.8\%& 81.77\%& 82.56\% \\
+        \textbf{\textit{tion}} &\ &\ &\ &\ &\ &\ \\
+
+        \hline
+        \end{tabular}
+        \label{tab1}
+        {$^{\mathrm{a}}$CiteSeer.}
+        {$^{\mathrm{b}}$PubMed.}
+        {$^{\mathrm{c}}$Small WoS.}
+        {$^{\mathrm{d}}$Large WoS.}
+        {$^{\mathrm{e}}$Large WoS w/ PCA.}
+    \end{center}
+\end{table}
+
+From the results in the table, we see that our dataset performs weaker than 
+PubMed and Cora in terms of node classification and weaker than CiteSeer in 
+terms of link prediction. Despite this, our model has the strongest performance 
+averaged between node classification and link prediction, even before PCA. It is 
+also interesting to note that the larger networks in terms of nodes have a smaller 
+difference between the performance of node classification and link prediction, 
+WoS by just a few percentage points and PubMed by less than a tenth of a percent. 
+Similarly, CiteSeer has the lowest average degree and also performs the 
+best for link prediction. \par 
+
+However, one of the strongest limitations in the results of the applied models 
+is the lack of knowledge of the cause of performance. The performance of the 
+models could be motivated by differences in the structure of the networks due 
+to the nature of the associated fields, differences in the databases used to 
+curate the networks, and differences in the characteristics of the networks 
+themselves. For example, CiteSeer has multiple self-loops, while the other 
+networks have few if any. Similarly, Cora and CiteSeer are unconnected, while 
+PubMed is connected. Future research on this paper could extend this study to 
+homogenize the datasets by removing self-loops, making all graphs connected, 
+and applying PCA to all datasets to observe any changes in performance. \par 
+
+Similarly, a limitation in our approach exists in our dataset in the class 
+imbalance of the ML Accelerator class having far fewer papers than the other 
+classes. This limitation can influence the results of the dataset, such as 
+creating a tendency to not classify a node as ML Accelerator since it is 
+less likely for a paper to belong to this class. This issue can be addressed 
+through solutions such as minority oversampling, creating artificial samples 
+of the ML Accelerator class, or majority undersampling, omitting some samples 
+of the remaining classes to simulate more balanced classes. However, to 
+preserve any information about the underlying structure of the field of 
+ML hardware, we assume that this imbalance of classes is a property of 
+the field of ML hardware, avoiding any manipulation of the original 
+set of samples. \par
+
+For future plans, the most straightforward path is exploring the use of the 
+dataset as an academic tool. Cora and CiteSeer are both extensively used as a 
+tool for the exploration of machine learning, aiming for the strongest results 
+of classification for the dataset. A similar approach can be used for the new 
+WoS dataset, observing the results of these high-performing methods in Cora 
+or CiteSeer on the WoS dataset. Similarly, this dataset can be used to explore 
+new models for classifying or predicting citation networks. Since this dataset 
+has different characteristics than all of the others, it may offer insight 
+into using new or different models than before. \par
+
+Additionally, the models trained on the WoS dataset can be used for node 
+classification or link prediction in a practical sense. By classifying 
+papers in the field of machine learning hardware, the model can help 
+differentiate papers of the two categories in real life. This also 
+applies to link prediction - predicting links on an unpublished paper or 
+abstract can provide insight into potential inspiration from other academic 
+works. Similar applications of link prediction can assist in finding not only 
+papers for inspiration, but also other authors to collaborate with if, 
+for example, both authors have similar published papers. \par
+
+\section{Conclusion and Future Work}
+
+Overall, we reached our goals for this project of developing a new dataset 
+for papers relating to machine learning hardware for a better understanding 
+of the relationships between publications and authors. Through creating a 
+dataset that is well explained through node classification and link prediction, 
+these results can be reproduced for alternative applications like publication 
+classification or potential author collaboration. \par 
+
+In the development of this project, we have had the opportunity to witness 
+the application of GNNs on citation networks, in addition to a new dataset. 
+So, we have learned of various qualities of citation networks such as their 
+degree distribution, clustering coefficient, and their underlying network 
+structure, witnessing underlying paper data distribution. We also explore 
+GNN model differences between node classification and link prediction. 
+Creating a new dataset, we saw that GNNs are effective for node classification 
+and link prediction on a new network of machine learning hardware papers. \par
+
+Thus far, we created a dataset of machine learning hardware papers across 
+different demographics with classifications to be used in node classification 
+and link prediction, quantified in terms of characteristics like degree and 
+clustering coefficient, comparing the datasets in terms of traits and GNN performance. 
+While the creation of a competing academic dataset is a strong start to our goal, 
+our created graph still has opportunities for improvement. \par
 
 Before you begin to format your paper, first write and save the content as a 
 separate text file. Complete all content and organizational editing before 
