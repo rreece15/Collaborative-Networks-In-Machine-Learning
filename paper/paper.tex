@@ -11,9 +11,7 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Conference Paper Title*\\
-{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
-should not be used}
+\title{Conference Paper Title\\
 \thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
@@ -57,7 +55,14 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-Citation networks are graphical networks composed of publications as nodes and citations as edges. They offer a unique look into scientific collaboration and the flow of knowledge within academia. In this paper, we examine the history of machine learning hardware papers through the lens of citation networks and construct GNN models for node classification and link prediction for our custom machine learning hardware dataset as well as existing datasets in software engineering and machine learning. We utilize existing citation graphs as well as curate our own dataset from the Web of Science database to show that node classification and link prediction are effective on a new network of machine learning hardware papers.
+Citation networks are graphical networks composed of publications as nodes and citations as edges. 
+They offer a unique look into scientific collaboration and the flow of knowledge within academia. 
+In this paper, we examine the history of machine learning hardware papers through the lens of citation 
+networks and construct GNN models for node classification and link prediction for our custom machine 
+learning hardware dataset as well as existing datasets in software engineering and machine learning. 
+We utilize existing citation graphs as well as curate our own dataset from the Web of Science database 
+to show that node classification and link prediction are effective on a new network of machine learning 
+hardware papers.
 \end{abstract}
 
 % \begin{IEEEkeywords}
@@ -77,6 +82,7 @@ Due to the compute-intensive nature of this field, plenty of research exists in 
 computing loads. We utilize GNNs for node classification and link prediction to explore existing datasets and comment on the 
 new corpus of machine learning hardware papers. The main challenges are processing data for useful representations of the network 
 and data interpretation on the created GNNs to comment on the field of machine learning hardware. \par
+
 \section{Previous Work}
 There have been many previous explorations of citation networks using the datasets Cora, Citeseer, and PubMed Diabetes. 
 In these citation networks, in particular, node classification and link prediction have been heavily explored. 
@@ -197,6 +203,72 @@ larger graph to increase the overall connectivity of the graph. \par
     \caption{Large WoS network, Blue=ML Accelerators, Purple=Edge ML, Green=Neuromorphic Computing, Orange=Spiking Neural Network.}
     \label{fig}
 \end{figure}
+
+After applying these operations, the total number of nodes increases from 2,605 to 9,605 after removing 
+unusable nodes. This graph also has 52,945 edges and 6,821 features, from applying the 
+same methods of keyword extraction. When increasing the size of the dataset, we were also 
+met with a class imbalance - there were far fewer papers in ML Accelerators in the WoS database, 
+less than two thousand papers, while the other categories had over five thousand papers each. 
+In this regard, we can infer that ML accelerators are less popular (or at least less explored) 
+than other papers. However, since WoS is our only source of data, this could also result from 
+a lack of these papers in the Web of Science database. Since class imbalances can also impact 
+performance on ML models, this also acts as a limitation on the GNN models in use. \par
+
+Recognizing that the number of features is nearly double that of any of the given datasets, 
+this can also lead to excessive computation time and increased bias in the results from 
+features that supply noise in the machine learning models. So, we then apply principal 
+component analysis (PCA) to these features to select the features that best describe the 
+classifications and links between each node. Here, we apply PCA with an explained variance 
+of 80\% to provide a sufficient level of specificity without overfitting the data, 
+reducing the number of features to 760. \par
+
+Following this, we also update the characteristics of our graph, producing an average 
+degree of 11.09, an average clustering coefficient of 0.158, and a diameter of 18. 
+From the differences in these datasets, we see that the average degree of our dataset 
+is much higher than the given datasets. However, the clustering coefficient and diameter 
+of the dataset are comparable to those of other datasets. These metrics are compared to 
+the other datasets in Table 1 below. \par 
+
+From this table, we can see differences among the datasets explored in this paper, 
+revealing the structural properties of these different graphs. Primarily, there are 
+many more edges in the updated WoS compared to the other datasets, resulting in a much 
+higher average degree for the updated dataset. However, the clustering coefficient for 
+our dataset is still comparable to other datasets, implying that the field of machine 
+learning hardware tends to have a significant number of citations, but a similar number 
+of these papers forming a well-defined cluster. While Cora and CiteSeer are most similar 
+to the WoS database in terms of content, both relating to machine learning, the graph 
+characteristics of WoS are most similar to PubMed, with a higher degree and lower 
+clustering coefficient. However, another limitation of utilizing WoS as our primary 
+database is that it is unclear whether these characteristics arise as a quality of 
+the database or as a characteristic of the field of ML hardware in general. \par
+
+\begin{table}[htbp]
+    \caption{Citation Network Characteristics}
+    \begin{center}
+        \begin{tabular}{|c|cccccc|}
+        \hline
+        % \textbf{Table}&\multicolumn{6}{|c|}{\textbf{Table Column Head}} \\
+        % \cline{1-4} 
+        \textbf{} & \textbf{\textit{Nodes}} & \textbf{\textit{Edges}} & \textbf{\textit{Features}} &
+        \textbf{\textit{Degree}} & \textbf{\textit{CC$^{\mathrm{a}}$}} & \textbf{\textit{MD$^{\mathrm{b}}$}} \\
+        \hline
+        \textbf{\textit{Cora}} & 
+        2708& 5429& 1433& 3.89807& 0.24067& 19 \\
+        \textbf{\textit{CiteSeer}} & 
+        3312& 4660& 3704& 2.81400& 0.14255& 28 \\
+        \textbf{\textit{Pubmed}} & 
+        19717& 44348& 500& 4.49632& 0.06017& 18 \\
+        \textbf{\textit{Small WoS}} & 
+        2605& 6600& 4134& 5.06717& 0.13529& 16 \\
+        \textbf{\textit{Large WoS}} & 
+        2605& 6600& 4134& 5.06717& 0.13529& 16 \\
+        \hline
+        \end{tabular}
+        \label{tab1}
+        {$^{\mathrm{a}}$Clustering Coefficient.}
+        {$^{\mathrm{b}}$Maximum Diameter.}
+    \end{center}
+\end{table}
 
 Before you begin to format your paper, first write and save the content as a 
 separate text file. Complete all content and organizational editing before 
